@@ -77,7 +77,8 @@
     
     document.addEventListener("keydown", function(event) {
       // Jump when the spacebar is pressed
-      if (event.code === "Space") {
+      if (event.code === "Space" && event.target === document.body) {
+        event.preventDefault(); // Prevent default scrolling behavior
         jump();
       }
     });
