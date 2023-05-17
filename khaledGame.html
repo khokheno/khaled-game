@@ -30,17 +30,12 @@
       height: 50px;
       background-color: #337ab7;
       position: absolute;
-      top: 50%;
+      top: 0;
       left: 50%;
-      transform: translate(-50%, -50%);
-      transition: all 0.2s ease-in-out;
+      transform: translateX(-50%);
+      transition: top 0.1s;
       border-radius: 50%;
       cursor: pointer;
-    }
-    
-    #player:hover {
-      background-color: #23527c;
-      transform: translate(-50%, -50%) scale(1.2);
     }
   </style>
 </head>
@@ -51,32 +46,43 @@
   
   <script>
     var player = document.getElementById("player");
+    var acceleration = 0.2;
+    var velocity = 0;
+    var gravity = 0.5;
     
-    function movePlayer(event) {
+    function updatePlayerPosition() {
       var rect = player.getBoundingClientRect();
       var containerRect = document.getElementById("game-container").getBoundingClientRect();
-      var x = event.clientX - containerRect.left - rect.width / 2;
-      var y = event.clientY - containerRect.top - rect.height / 2;
       
-      // Prevent player from going outside the game container
-      if (x < 0) {
-        x = 0;
-      }
-      if (y < 0) {
-        y = 0;
-      }
-      if (x > containerRect.width - rect.width) {
-        x = containerRect.width - rect.width;
-      }
-      if (y > containerRect.height - rect.height) {
-        y = containerRect.height - rect.height;
+      // Apply gravity
+      velocity += gravity;
+      
+      // Update position
+      var newY = rect.top + velocity;
+      
+      // Check collision with the container bottom
+      if (newY + rect.height > containerRect.height) {
+        newY = containerRect.height - rect.height;
+        velocity = -velocity * 0.8; // Bounce back with reduced velocity
       }
       
-      player.style.left = x + "px";
-      player.style.top = y + "px";
+      player.style.top = newY + "px";
+      
+      requestAnimationFrame(updatePlayerPosition);
     }
     
-    document.addEventListener("mousemove", movePlayer);
+    function jump() {
+      velocity = -8; // Adjust the jump height by changing the velocity value
+    }
+    
+    document.addEventListener("keydown", function(event) {
+      // Jump when the spacebar is pressed
+      if (event.code === "Space") {
+        jump();
+      }
+    });
+    
+    requestAnimationFrame(updatePlayerPosition);
   </script>
 </body>
 </html>
